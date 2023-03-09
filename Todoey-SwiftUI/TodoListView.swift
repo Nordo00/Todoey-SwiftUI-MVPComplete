@@ -11,19 +11,13 @@
 // 5a. Using user defaults - DONE
 // 5b. Change the variables to match the ones in the course - DONE
 // 5c. @AppStorage - DONE
-// 6. Custom Data Model
-// 6b. NSEncoder
+// 6. Custom Data Model - DONE
+// 6b. NSEncoder - DONE
 // 7. Core Data
 
 
 import SwiftUI
 
-//MARK: - Model
-struct Item: Identifiable, Codable {
-    var id = UUID()
-    var title: String = ""
-    var done: Bool = false
-}
 
 //MARK: - View
 struct TodoListView: View {
@@ -31,18 +25,11 @@ struct TodoListView: View {
     @State private var showingAlert = false
     @State private var textField = ""
     
-    //let itemArray = ["The Fellowship", "The Two Towers", "Return of the King"]
-    //@State private var itemArray = ["The Fellowship", "The Two Towers", "Return of the King"]
-    //@State private var itemArray: [String] = (UserDefaults.standard.stringArray(forKey: "TodoListArray") ?? ["Todo List Item 1"])
-    //@AppStorage("todoArray") var itemArray = ["The Fellowship", "The Two Towers", "Return of the King"]
-    @State private var itemArray: [Item] = [
-        Item(title: "The Fellowship", done: false),
-        Item(title: "The Two Towers", done: false),
-        Item(title: "Return of the King", done: false)
-    ]
 
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    @FetchRequest(sortDescriptors: []) var itemArray:FetchedResults<Item>
     
+    @Environment(\.managedObjectContext) var context
+
     var body: some View {
         
         //let _ = print(NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask,true).last! as String)
@@ -50,15 +37,16 @@ struct TodoListView: View {
         NavigationView {
             VStack {
                 List {
-                    ForEach($itemArray) { $item in
+                    ForEach(itemArray) { item in
                         HStack {
                             Button {
                                 // action to toggle checked
-                                print(item.title)
+                                print(item.title!)
                                 // toggle the done field
                                 item.done.toggle()
+                                try? context.save()
                             } label: {
-                                Text(item.title)
+                                Text(item.title ?? "Unknown Item")
                             }
                             
                             Spacer()
@@ -69,9 +57,6 @@ struct TodoListView: View {
                             } else {
                                 Image(systemName: "squareshape")
                             }
-                        }
-                        .task {
-                            await loadItems()
                         }
                     }
                 }
@@ -93,35 +78,13 @@ struct TodoListView: View {
     //MARK: - Model Manipulation Methods
     func saveItems() {
         print("You entered \(textField)")
-        var newItem = Item()
+        let newItem = Item(context: context)
         newItem.title = textField
         newItem.done = false
         
-        itemArray.append(newItem)
-
-        // Encode
-        let encoder = PropertyListEncoder()
-        do {
-            let data = try encoder.encode(self.itemArray)
-            try data.write(to: dataFilePath!)
-        } catch {
-            print("Error encoding \(error)")
-        }
-        
+        try? context.save()
         
         textField = ""
-    }
-    
-    func loadItems() async {
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-                itemArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("Error")
-            }
-                
-        }
     }
 }
 
