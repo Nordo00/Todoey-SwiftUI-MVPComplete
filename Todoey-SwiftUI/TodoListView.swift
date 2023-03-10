@@ -14,6 +14,7 @@
 // 6. Custom Data Model - DONE
 // 6b. NSEncoder - DONE
 // 7. Core Data
+// 8. Search bar to Todoey
 
 
 import SwiftUI
@@ -25,10 +26,11 @@ struct TodoListView: View {
     @State private var showingAlert = false
     @State private var textField = ""
     
-
-    @FetchRequest(sortDescriptors: []) var itemArray:FetchedResults<Item>
-    
     @Environment(\.managedObjectContext) var context
+    
+    @FetchRequest(sortDescriptors: []) var itemArray:FetchedResults<Item>
+
+
 
     var body: some View {
         
@@ -90,6 +92,6 @@ struct TodoListView: View {
 
 struct TodoListView_Previews: PreviewProvider {
     static var previews: some View {
-        TodoListView()
+        TodoListView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }

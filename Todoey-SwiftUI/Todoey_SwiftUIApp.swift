@@ -9,12 +9,14 @@ import SwiftUI
 
 @main
 struct Todoey_SwiftUIApp: App {
-    @StateObject private var dataController = DataController()
+    //@StateObject private var dataController = DataController()
+    let persistenceController = PersistenceController.shared
     
     var body: some Scene {
         WindowGroup {
             TodoListView()
-                .environment(\.managedObjectContext, dataController.container.viewContext)
+                //.environment(\.managedObjectContext, dataController.container.viewContext)
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }
