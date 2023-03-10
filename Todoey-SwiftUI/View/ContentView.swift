@@ -1,5 +1,5 @@
 //
-//  TodoListView.swift
+//  ContentView.swift
 //  Todoey-SwiftUI
 //
 //  Created by Nordo on 3/6/23.
@@ -14,17 +14,19 @@
 // 6. Custom Data Model - DONE
 // 6b. NSEncoder - DONE
 // 7. Core Data - DONE
-// 8. Search bar to Todoey
+// 8. Search bar to Todoey - DONE 
 
 
 import SwiftUI
 
 
 //MARK: - View
-struct TodoListView: View {
+struct ContentView: View {
 
     @State private var showingAlert = false
     @State private var textField = ""
+    
+    @State private var searchText = ""
     
     @Environment(\.managedObjectContext) var context
     
@@ -38,32 +40,10 @@ struct TodoListView: View {
         
         NavigationView {
             VStack {
-                List {
-                    ForEach(itemArray) { item in
-                        HStack {
-                            Button {
-                                // action to toggle checked
-                                print(item.title!)
-                                // toggle the done field
-                                item.done.toggle()
-                                try? context.save()
-                            } label: {
-                                Text(item.title ?? "Unknown Item")
-                            }
-                            
-                            Spacer()
-                            
-                            // if then to change which image we use
-                            if item.done  {
-                                Image(systemName: "checkmark.square.fill")
-                            } else {
-                                Image(systemName: "squareshape")
-                            }
-                        }
-                    }
-                }
+                FilteredTodoList(filter: searchText)
             }
             .navigationTitle("Todoey")
+            .searchable(text: $searchText, prompt: "Search")
             .toolbar {
                 Button("Add Item") {
                     // action of the button
@@ -91,8 +71,8 @@ struct TodoListView: View {
     }
 }
 
-struct TodoListView_Previews: PreviewProvider {
+struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        TodoListView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
