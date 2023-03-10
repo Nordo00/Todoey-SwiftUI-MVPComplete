@@ -13,7 +13,7 @@
 // 5c. @AppStorage - DONE
 // 6. Custom Data Model - DONE
 // 6b. NSEncoder - DONE
-// 7. Core Data
+// 7. Core Data - DONE
 // 8. Search bar to Todoey
 
 
@@ -28,7 +28,7 @@ struct TodoListView: View {
     
     @Environment(\.managedObjectContext) var context
     
-    @FetchRequest(sortDescriptors: []) var itemArray:FetchedResults<Item>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Item.dateAdded, ascending: true)]) var itemArray:FetchedResults<Item>
 
 
 
@@ -83,6 +83,7 @@ struct TodoListView: View {
         let newItem = Item(context: context)
         newItem.title = textField
         newItem.done = false
+        newItem.dateAdded = Date()
         
         try? context.save()
         

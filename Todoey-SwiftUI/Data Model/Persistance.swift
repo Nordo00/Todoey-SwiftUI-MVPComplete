@@ -17,6 +17,7 @@ struct PersistenceController {
             let newItem = Item(context: viewContext)
             newItem.title = "Item \(index)"
             newItem.done = Bool.random()
+            newItem.dateAdded = Date()
         }
         do {
             try viewContext.save()
