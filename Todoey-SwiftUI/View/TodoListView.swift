@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  TodoListView.swift
 //  Todoey-SwiftUI
 //
 //  Created by Nordo on 3/6/23.
@@ -14,14 +14,17 @@
 // 6. Custom Data Model - DONE
 // 6b. NSEncoder - DONE
 // 7. Core Data - DONE
-// 8. Search bar to Todoey - DONE 
+// 8. Search bar to Todoey - DONE
+// 9. Category
+// 10. Swipeable
 
 
 import SwiftUI
 
 
 //MARK: - View
-struct ContentView: View {
+struct TodoListView: View {
+    @Binding var selectedCategory: Category
 
     @State private var showingAlert = false
     @State private var textField = ""
@@ -38,11 +41,11 @@ struct ContentView: View {
         
         //let _ = print(NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask,true).last! as String)
         
-        NavigationView {
+        NavigationStack {
             VStack {
-                FilteredTodoList(filter: searchText)
+                FilteredTodoList(filter: searchText, selectedCategory: selectedCategory)
             }
-            .navigationTitle("Todoey")
+            .navigationTitle("Items")
             .searchable(text: $searchText, prompt: "Search")
             .toolbar {
                 Button("Add Item") {
@@ -65,14 +68,17 @@ struct ContentView: View {
         newItem.done = false
         newItem.dateAdded = Date()
         
+        print("The selected category is: \(selectedCategory.name!)")
+        newItem.parentCategory = selectedCategory
+        
         try? context.save()
         
         textField = ""
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-    }
-}
+//struct TodoListView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        TodoListView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+//    }
+//}

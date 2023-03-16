@@ -12,12 +12,16 @@ struct FilteredTodoList: View {
     @FetchRequest var fetchRequest: FetchedResults<Item>
     @Environment(\.managedObjectContext) var context
     
-    init(filter: String) {
+    init(filter: String, selectedCategory: Category) {
+        
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory.name!)
+        
+        let filterPredicate = NSPredicate(format: "title CONTAINS[cd] %@", filter)
         
         if !filter.isEmpty {
-            _fetchRequest = FetchRequest<Item>(sortDescriptors: [NSSortDescriptor(keyPath: \Item.dateAdded, ascending: true)], predicate: NSPredicate(format: "title CONTAINS[cd] %@", filter))
+            _fetchRequest = FetchRequest<Item>(sortDescriptors: [NSSortDescriptor(keyPath: \Item.dateAdded, ascending: true)], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, filterPredicate]))
         } else {
-            _fetchRequest = FetchRequest<Item>(sortDescriptors: [NSSortDescriptor(keyPath: \Item.dateAdded, ascending: true)])
+            _fetchRequest = FetchRequest<Item>(sortDescriptors: [NSSortDescriptor(keyPath: \Item.dateAdded, ascending: true)], predicate: categoryPredicate)
         }
     }
     
