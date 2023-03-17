@@ -48,6 +48,15 @@ struct FilteredTodoList: View {
                         Image(systemName: "squareshape")
                     }
                 }
+                .swipeActions(allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        print("Deleting item \(item.title!)")
+                        context.delete(item)
+                        try? context.save()
+                    } label: {
+                        Label ("Delete", systemImage: "trash.fill")
+                    }
+                }
             }
         }
 

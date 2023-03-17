@@ -15,8 +15,8 @@
 // 6b. NSEncoder - DONE
 // 7. Core Data - DONE
 // 8. Search bar to Todoey - DONE
-// 9. Category
-// 10. Swipeable
+// 9. Category - DONE
+// 10. Swipeable - DONE
 
 
 import SwiftUI
